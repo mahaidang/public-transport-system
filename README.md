@@ -28,7 +28,7 @@
 - **SpringMVC Framework** (có thể kết hợp Spring Boot)
 - **Spring Security** – chứng thực và phân quyền (vai trò **Admin/User**)
 - **Hibernate ORM thuần** (không dùng Spring Data JPA)
-- CSDL: **MySQL** hoặc **PostgreSQL**
+- CSDL: **MySQL**
 
 ### Frontend
 - **ReactJS** (React Router, Axios)
