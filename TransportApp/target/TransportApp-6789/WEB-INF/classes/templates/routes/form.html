@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title th:text="${route.id == null} ? 'Thêm Tuyến' : 'Cập nhật Tuyến'"></title>
+    <th:block th:replace="base :: bootstrap"></th:block>
+</head>
+<body>
+    <header th:replace="base :: header"></header>
+
+    <main class="container mt-4" style="max-width:600px">
+        <h4 class="mb-3" th:text="${route.id == null} ? 'Thêm Tuyến Mới' : 'Chỉnh Sửa Tuyến'"></h4>
+
+        <form th:object="${route}"
+              th:action="@{'/routes/save'}"
+              method="post"
+              class="border p-3 rounded shadow-sm bg-light">
+
+            <!-- Mã tuyến -->
+            <div class="mb-3">
+                <label class="form-label">Mã tuyến</label>
+                <input type="text" class="form-control"
+                       th:field="*{code}" placeholder="VD: B01"/>
+                <div class="text-danger" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></div>
+            </div>
+
+            <!-- Tên tuyến -->
+            <div class="mb-3">
+                <label class="form-label">Tên tuyến</label>
+                <input type="text" class="form-control"
+                       th:field="*{name}" placeholder="Tuyến Bến Thành – Suối Tiên"/>
+                <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+            </div>
+
+            <!-- Trạng thái -->
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox"
+                       th:field="*{isActive}" id="activeCheckbox"/>
+                <label class="form-check-label" for="activeCheckbox">Đang hoạt động</label>
+            </div>
+
+            <!-- Ghi chú -->
+            <div class="mb-3">
+                <label class="form-label">Mô tả/ghi chú</label>
+                <textarea class="form-control" rows="3" th:field="*{description}"></textarea>
+                <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+            </div>
+
+            <!-- Hidden -->
+            <input type="hidden" th:field="*{id}" />
+            <input type="hidden" name="mode" th:value="${formMode}"/>
+
+            <!-- Nút -->
+            <button class="btn btn-success">Lưu</button>
+            <a th:href="@{/routes}" class="btn btn-secondary">Quay lại</a>
+        </form>
+
+
+    </main>
+
+
+    <footer th:replace="base :: footer"></footer>
+<th:block th:replace="base :: script"></th:block>
+
+</script>
+</body>
+</html>

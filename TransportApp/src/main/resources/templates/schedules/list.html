@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Danh sách Lịch trình</title>
+        <!-- Chèn Bootstrap & các thẻ chung -->
+    <th:block th:replace="base :: bootstrap"></th:block>
+</head>
+<body>
+    <header th:replace="base :: header"></header>
+
+    <main class="container mt-4">
+        <!-- Tiêu đề & nút Thêm -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="m-0">Danh sách Lịch trình</h4>
+            <div th:if="${variantId != null}">
+
+                <a th:href="@{'/schedules/add'}"
+                   class="btn btn-primary">Thêm Lịch</a>
+            </div>
+        </div>
+
+        <!-- Bảng dữ liệu -->
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Chặng</th>
+                    <th>Day Group</th>
+                    <th>Hiệu lực từ</th>
+                    <th>Hiệu lực đến</th>
+                    <th>Chuyến</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Lặp qua danh sách schedules -->
+                <tr th:each="s, stat : ${schedules}">
+                    <td th:text="${stat.index + 1}">1</td>
+                    <td th:text="${s.name}"> </td>
+                    <td th:text="${s.dayGroup}">Mon-Fri</td>
+                    <td th:text="${#dates.format(s.effectiveFrom,'dd/MM/yyyy')}">01/08/25</td>
+                    <td th:text="${s.effectiveTo != null ? #dates.format(s.effectiveTo,'dd/MM/yyyy') : '-'}">-</td>
+                    <td>
+                        <!-- Hiển thị số chuyến -->
+                        <!--<span th:text="${s.scheduleTripSet.size()}"></span>-->
+                        <!-- Nút xem / quản lý -->
+                        <a th:href="@{'/schedules/' + ${s.id} + '/trips'}"
+                           class="btn btn-sm btn-info ms-2">Quản lý</a>
+                    </td>
+                    <td>
+                        <a th:href="@{'/schedules/edit/' + ${s.id}}"
+                           class="btn btn-sm btn-warning me-1">Sửa</a>
+                        <a class="btn btn-sm btn-danger" th:href="@{'/schedules/delete/' + ${s.id}}"
+                           onclick="return confirm('Xóa tuyến này?');">Xóa</a>
+                    </td>
+                </tr>
+
+                <!-- Khi không có dữ liệu -->
+                <tr th:if="${#lists.isEmpty(schedules)}">
+                    <td colspan="6" class="text-center">Không có lịch nào</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div th:replace="base :: pagination(${currentPage}, ${pages}, ${kw}, ${orderBy})"></div>
+
+        <!-- (Tuỳ chọn) khu vực phân trang -->
+    </main>
+</body>
+</html>

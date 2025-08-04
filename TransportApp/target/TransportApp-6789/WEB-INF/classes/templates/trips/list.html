@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Danh sách Chuyến</title>
+    <th:block th:replace="base :: bootstrap"></th:block>
+</head>
+<body>
+    <header th:replace="base :: header"></header>
+
+    <main class="container mt-4">
+        <div class="d-flex justify-content-between mb-3">
+            <h4>Danh sách Chuyến</h4>
+            <a th:href="@{'/schedules/' + ${scheduleId} + '/trips/add'}"
+               class="btn btn-primary">+ Thêm chuyến</a>
+        </div>
+
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th><th>Chuyến</th><th>Thời gian đi</th><th>Thời gian đến</th><th width="120"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="t, stat : ${trips}">
+                    <td th:text="${stat.count}">1</td>
+                    <td th:text="${t.name}"></td>
+                    <td th:text="${#dates.format(t.departTime, 'yyyy-MM-dd''T''HH:mm')}"></td>
+                    <td th:text="${#dates.format(t.arriveTime, 'yyyy-MM-dd''T''HH:mm')}"></td>
+                    <td>
+                        <a th:href="@{'/schedules/' + ${scheduleId} + '/trips/' + ${t.id} + '/edit'}"
+                           class="btn btn-sm btn-warning">Sửa</a>
+                        <form th:action="@{'/schedules/' + ${scheduleId} + '/trips/' + ${t.id} + '/delete'}"
+                              method="post" class="d-inline"
+                              onsubmit="return confirm('Xóa chuyến này?');">
+                            <button class="btn btn-sm btn-danger">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(trips)}">
+                    <td colspan="5" class="text-center">Không có chuyến</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+</body>
+</html>
+
