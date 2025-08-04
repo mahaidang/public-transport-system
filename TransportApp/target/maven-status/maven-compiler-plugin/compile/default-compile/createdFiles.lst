@@ -10,6 +10,7 @@ com\hdda\controllers\api\ApiRouteController.class
 com\hdda\repositories\impl\RouteRepositoryImpl.class
 com\hdda\repositories\impl\RouteVariantRepositoryImpl.class
 com\hdda\configs\SpringSecurityConfigs.class
+com\hdda\dto\request\SearchRouteRequestDTO.class
 com\hdda\services\impl\RouteOptimizeServiceImpl.class
 com\hdda\configs\DispatcherServletInit.class
 com\hdda\configs\HibernateConfigs.class

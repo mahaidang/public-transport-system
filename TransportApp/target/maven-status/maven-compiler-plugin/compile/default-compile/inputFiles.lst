@@ -17,6 +17,7 @@ D:\OU\PhatTrienHeThongWeb\dht\project\TransportApp\src\main\java\com\hdda\contro
 D:\OU\PhatTrienHeThongWeb\dht\project\TransportApp\src\main\java\com\hdda\dto\light\RouteLightDTO.java
 D:\OU\PhatTrienHeThongWeb\dht\project\TransportApp\src\main\java\com\hdda\services\impl\StopServiceImpl.java
 D:\OU\PhatTrienHeThongWeb\dht\project\TransportApp\src\main\java\com\hdda\services\StopService.java
+D:\OU\PhatTrienHeThongWeb\dht\project\TransportApp\src\main\java\com\hdda\dto\request\SearchRouteRequestDTO.java
 D:\OU\PhatTrienHeThongWeb\dht\project\TransportApp\src\main\java\com\hdda\dto\detail\ItineraryDTO.java
 D:\OU\PhatTrienHeThongWeb\dht\project\TransportApp\src\main\java\com\hdda\dto\request\OptimizeRouteRequestDTO.java
 D:\OU\PhatTrienHeThongWeb\dht\project\TransportApp\src\main\java\com\hdda\repositories\impl\ScheduleRepositoryImpl.java
