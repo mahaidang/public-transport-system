@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Button, Container, Row, Col, Card, Form, Alert } from 'react-bootstrap';
-import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../configs/firebaseConfig';
 import { useNavigate, Link } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
+import cookie from 'react-cookies';
+import Apis, { endpoints, authApis } from '../configs/Apis';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,16 +16,18 @@ const Login = () => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+      const userInfo = result.user;
 
-      localStorage.setItem('user', JSON.stringify({
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL
-      }));
+      const userData = {
+        uid: userInfo.uid,
+        email: userInfo.email,
+        displayName: userInfo.displayName || userInfo.email,
+        photoURL: userInfo.photoURL || `https://i.pravatar.cc/150?u=${userInfo.email}`
+      };
 
-      navigate('/home');
+      localStorage.setItem('user', JSON.stringify(userData));
+      window.dispatchEvent(new Event("storage"));
+      navigate('/');
     } catch (error) {
       console.error('Google login error:', error);
       setError('Đăng nhập Google thất bại');
@@ -32,15 +36,29 @@ const Login = () => {
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
+
     try {
-      const result = await signInWithEmailAndPassword(auth, form.email, form.password);
-      const user = result.user;
-      localStorage.setItem('user', JSON.stringify(user));
-      navigate('/home');
+      // 1. Gửi request login → nhận JWT
+      const res = await Apis.post(endpoints.login, {
+        username: form.email,
+        passwordHash: form.password
+      });
+
+      const token = res.data.token;
+      cookie.save("token", token); // lưu JWT vào cookie
+
+      // 2. Gọi profile → lấy thông tin user
+      const profileRes = await authApis().get(endpoints.profile);
+      const userData = profileRes.data;
+
+      // 3. Lưu vào localStorage và thông báo cập nhật header
+      localStorage.setItem("user", JSON.stringify(userData));
+      window.dispatchEvent(new Event("storage"));
+      navigate("/");
     } catch (error) {
-      console.error('Email login error:', error);
-      setError('Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu.');
+      console.error("Login error:", error);
+      setError("Đăng nhập thất bại. Vui lòng kiểm tra tài khoản hoặc máy chủ.");
     }
   };
 

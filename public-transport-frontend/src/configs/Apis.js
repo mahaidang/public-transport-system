@@ -1,19 +1,21 @@
 import axios from "axios";
-import cookie from 'react-cookies'
+import cookie from 'react-cookies';
 
-const BASE_URL = 'http://localhost:8080/TransportApp/api/';
+const BASE_URL = 'http://localhost:8080/TransportApp/api';
 
 export const endpoints = {
-  'optimizeRoute' : "/routes/optimize",
-}
+  optimizeRoute: "/routes/optimize",
+  login: "/login",
+  profile: "/secure/profile",
+};
 
 export const authApis = () => axios.create({
-    baseURL: BASE_URL,
-    headers: {
-        'Authorization': `Bearer ${cookie.load('token')}`
-    }
-})
+  baseURL: BASE_URL,
+  headers: {
+    Authorization: `Bearer ${cookie.load('token')}`
+  }
+});
 
 export default axios.create({
-    baseURL: BASE_URL
-})
+  baseURL: BASE_URL
+});

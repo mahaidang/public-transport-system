@@ -6,16 +6,20 @@ import Login from "./components/Login";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useEffect } from "react";
 import Register from "./components/Register";
+import TrafficReport from "./components/TrafficReport";
+import MapView from "./components/MapView";
+import Profile from "./components/Profile";
+import SearchStreet from "./components/SearchStreet";
 
 const LayoutWrapper = () => {
   const location = useLocation();
 
-  // Ẩn Header/Footer nếu đang ở trang đăng nhập
+
   const isLoginPage = location.pathname === "/";
   const isRegisterPage = location.pathname === "/";
 
   useEffect(() => {
-    window.scrollTo(0, 0); // Optional: cuộn lên đầu trang khi chuyển route
+    window.scrollTo(0, 0);
   }, [location.pathname]);
 
   return (
@@ -24,7 +28,11 @@ const LayoutWrapper = () => {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/map" element={<MapView/>}/>
+        <Route path="/report" element={<TrafficReport/>} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/search" element={<SearchStreet/>}/>
+        <Route path="/" element={<Home />} />
       </Routes>
       {!isLoginPage && <Footer /> || !isRegisterPage && <Footer />}
     </>

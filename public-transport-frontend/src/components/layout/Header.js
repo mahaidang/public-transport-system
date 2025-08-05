@@ -29,6 +29,21 @@ const Header = () => {
       alert("Đăng xuất thất bại");
     }
   };
+  useEffect(() => {
+  const loadUser = () => {
+    const userInfo = localStorage.getItem("user");
+    if (userInfo) setUser(JSON.parse(userInfo));
+    else setUser(null);
+  };
+
+  loadUser(); // Lần đầu load
+
+  // 👇 Lắng nghe sự kiện thay đổi từ localStorage (từ Login.js)
+  window.addEventListener("storage", loadUser);
+
+  return () => window.removeEventListener("storage", loadUser);
+}, []);
+
 
   return (
     <Navbar expand="lg" className="bg-body-tertiary px-3">
@@ -37,21 +52,24 @@ const Header = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link as={Link} to="/home">Trang chủ</Nav.Link>
-            <Nav.Link href="#about">Giới thiệu</Nav.Link>
+            <Link to="/home" className="nav-link">Trang chủ</Link>
+            <Link to="/report" className="nav-link">Báo cáo</Link>
+            <Link to="/profile" className="nav-link">Hồ sơ cá nhân</Link>
+
             <NavDropdown title="Thông tin tuyến" id="basic-nav-dropdown">
-              <NavDropdown.Item href="#route">Tuyến</NavDropdown.Item>
-              <NavDropdown.Item href="#search">Tra cứu đường</NavDropdown.Item>
-              <NavDropdown.Item href="#favorite">Tuyến đường yêu thích</NavDropdown.Item>
+              <Link to="/map" className="dropdown-item">Tra cứu lộ trình bus</Link>
+              <Link to="/search" className="dropdown-item">Tra cứu tuyến</Link>
+              <Link to="/favorite" className="dropdown-item">Tuyến đường yêu thích</Link>
             </NavDropdown>
           </Nav>
 
           <Nav className="ms-auto align-items-center gap-2">
             {!user ? (
               <>
-                <Nav.Link as={Link} to="/login">
-                  <CgProfile size={20} style={{ marginBottom: "3px" }} /> Đăng nhập
-                </Nav.Link>
+                <Link to="/login" className="nav-link d-flex align-items-center">
+                  <CgProfile size={20} className="me-1" />
+                  Đăng nhập
+                </Link>
                 <Button as={Link} to="/register" variant="outline-primary" size="sm">
                   Đăng ký
                 </Button>

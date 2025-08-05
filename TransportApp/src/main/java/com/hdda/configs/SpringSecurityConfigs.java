@@ -55,34 +55,34 @@ public class SpringSecurityConfigs {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws
-//            Exception {
-//        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-//                .csrf(c -> c.disable()).authorizeHttpRequests(requests
-//                -> requests.requestMatchers("/", "/home").authenticated()
-//                        .requestMatchers("/api/**").permitAll()
-//                        .requestMatchers(HttpMethod.GET, "/routes").hasRole("ADMIN")
-//                        .requestMatchers(HttpMethod.GET, "/routes/**").hasAnyRole("USER", "ADMIN")
-//                        .anyRequest().authenticated())
-//                .formLogin(form -> form.loginPage("/login")
-//                .loginProcessingUrl("/login")
-//                .defaultSuccessUrl("/", true)
-//                .failureUrl("/login?error=true").permitAll())
-//                .logout(logout -> logout.logoutSuccessUrl("/login").permitAll());
-//        return http.build();
-//    }
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws
+            Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(c -> c.disable())
-                .authorizeHttpRequests(requests -> requests
-                .anyRequest().permitAll() // 👈 Cho phép truy cập tất cả URL
-                )
-                .formLogin(form -> form.disable()) // 👈 Không bật form login
-                .logout(logout -> logout.disable()); // 👈 Không bật logout
+                .csrf(c -> c.disable()).authorizeHttpRequests(requests
+                -> requests.requestMatchers("/", "/home").authenticated()
+                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/routes").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/routes/**").hasAnyRole("USER", "ADMIN")
+                        .anyRequest().authenticated())
+                .formLogin(form -> form.loginPage("/login")
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/", true)
+                .failureUrl("/login?error=true").permitAll())
+                .logout(logout -> logout.logoutSuccessUrl("/login").permitAll());
         return http.build();
     }
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+//                .csrf(c -> c.disable())
+//                .authorizeHttpRequests(requests -> requests
+//                .anyRequest().permitAll() // 👈 Cho phép truy cập tất cả URL
+//                )
+//                .formLogin(form -> form.disable()) // 👈 Không bật form login
+//                .logout(logout -> logout.disable()); // 👈 Không bật logout
+//        return http.build();
+//    }
 
     @Bean
     public HandlerMappingIntrospector
@@ -107,33 +107,33 @@ public class SpringSecurityConfigs {
         return new StandardServletMultipartResolver();
     }
 
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//
-//        CorsConfiguration config = new CorsConfiguration();
-//
-//        config.setAllowedOrigins(List.of("http://localhost:3000/"));
-//        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-//        config.setExposedHeaders(List.of("Authorization"));
-//        config.setAllowCredentials(true);
-//
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", config);
-//
-//        return source;
-//    }
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("*")); // Cho phép tất cả origins
-        config.setAllowedMethods(List.of("*"));        // Cho phép tất cả methods  
-        config.setAllowedHeaders(List.of("*"));        // Cho phép tất cả headers
+
+        config.setAllowedOrigins(List.of("http://localhost:3000/"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setExposedHeaders(List.of("Authorization"));
         config.setAllowCredentials(true);
-        config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
+
         return source;
     }
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration config = new CorsConfiguration();
+//        config.setAllowedOriginPatterns(List.of("*")); // Cho phép tất cả origins
+//        config.setAllowedMethods(List.of("*"));        // Cho phép tất cả methods  
+//        config.setAllowedHeaders(List.of("*"));        // Cho phép tất cả headers
+//        config.setAllowCredentials(true);
+//        config.setMaxAge(3600L);
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", config);
+//        return source;
+//    }
 }

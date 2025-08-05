@@ -1,20 +1,14 @@
-import MapView from '../components/MapView';
-import { Button, Card, Col, Row } from 'react-bootstrap';
-import MapSearchView from './MapSearchView';
-
+import { Col, Row } from 'react-bootstrap';
+import MapView from './MapView';
+import MapUI from './MapUI';
 
 const Home = () => {
     return (
         <>
             <Row>
-                <Col md={12} className="p-4">
-                    <h4>Tìm tuyến đường</h4>
-                    <MapSearchView />
+                <Col md={12} className="p-4" style={{ height: '80vh' }}>
+                    <MapUI center={[106.68, 10.77]} zoom={14}/>             
                 </Col>
-            </Row>
-
-            <Row>
-                
             </Row>
         </>
     );

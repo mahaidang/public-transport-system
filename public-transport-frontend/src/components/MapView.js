@@ -4,34 +4,25 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import debounce from 'lodash.debounce';
 
-/*────────── Goong JS (Mapbox-GL) ──────────*/
 import goongjs from '@goongmaps/goong-js';
 import '@goongmaps/goong-js/dist/goong-js.css';
 
-/*────────── Polyline decoder ──────────*/
 import polyline from '@mapbox/polyline';
 import polylineMapbox from "@mapbox/polyline";
 
-/*────────── Backend API ──────────*/
 import Apis, { endpoints } from '../configs/Apis';
+import ENV from '../configs/env';
 
-/*────────── Keys & constants ──────────*/
-const GOONG_PLACES_KEY = 'Q4bkZ3oKTpdRmZBsFwpezaOcYmXyuYuZA4WIeRLW';
-const GOONG_MAP_KEY    = 'vbiUfQEWCEZAIgIaxD1hMpCkhIDmqiXUOPILcrYa';
-const GOONG_STYLE_URL  = 'https://tiles.goong.io/assets/goong_map_web.json';
-const MAX_WAYPOINTS    = 25; // Goong Directions API limit
+const GOONG_PLACES_KEY = ENV.GOONG_PLACES_KEY;
+const GOONG_MAP_KEY = ENV.GOONG_MAP_KEY;
+const GOONG_STYLE_URL = 'https://tiles.goong.io/assets/goong_map_web.json';
+const MAX_WAYPOINTS = 25;
 
-/*====================================================================*/
 export default function RouteOptimizeQuickTest() {
-  const [start,  setStart]  = useState(null);   // { lat, lng, label }
-  const [end,    setEnd]    = useState(null);
-  const [routes, setRoutes] = useState([]);     // array ItineraryDTO
+  const [start, setStart] = useState(null);
+  const [end, setEnd] = useState(null);
+  const [routes, setRoutes] = useState([]);
 
-
-
-
-
-  /*────────────────── 1. Autocomplete (debounced) ──────────────────*/
   const fetchOptions = async (inputValue) => {
     if (!inputValue) return [];
     const { data } = await axios.get('https://rsapi.goong.io/Place/AutoComplete', {
@@ -47,7 +38,7 @@ export default function RouteOptimizeQuickTest() {
     const { data } = await axios.get('https://rsapi.goong.io/Place/Detail', {
       params: { api_key: GOONG_PLACES_KEY, place_id }
     });
-    return data.result.geometry.location; // { lat, lng }
+    return data.result.geometry.location;
   };
 
   const handlePick = (setter) => async (opt) => {
@@ -56,13 +47,12 @@ export default function RouteOptimizeQuickTest() {
     setter({ lat, lng, label: opt.label });
   };
 
-  /*────────────────── 2. Call backend ──────────────────*/
   const handleSearch = async () => {
-    if (!start || !end) return alert('⚠️  Chọn cả điểm đi và điểm đến!');
+    if (!start || !end) return alert('⚠️ Chọn cả điểm đi và điểm đến!');
 
     const payload = {
       start: { lat: start.lat, lng: start.lng },
-      end:   { lat: end.lat,   lng: end.lng   },
+      end: { lat: end.lat, lng: end.lng },
       travelDate: dayjs().format('YYYY-MM-DD'),
       earliestDepart: dayjs().format('HH:mm:ss'),
       sortBy: 'TIME'
@@ -71,25 +61,21 @@ export default function RouteOptimizeQuickTest() {
     try {
       const res = await Apis.post(endpoints.optimizeRoute, payload);
       setRoutes(res.data);
-      console.log('[Optimize] →', res.data);
     } catch (err) {
       console.error(err);
       alert('Lỗi gọi API tối ưu!');
     }
   };
 
-  /*────────────────── 3. Derived data ──────────────────*/
   const best = useMemo(() => (routes?.length ? routes[0] : null), [routes]);
 
-  /*────────────────── 4. UI ──────────────────*/
   return (
     <div style={{ maxWidth: 640, margin: 'auto', padding: 16 }}>
       <h2 style={{ fontWeight: 600, marginBottom: 12 }}>Tìm lộ trình bus</h2>
 
-      {/* Autocomplete */}
       <div style={{ display: 'grid', gap: 12 }}>
         <AsyncSelect cacheOptions loadOptions={debouncedLoadOptions} onChange={handlePick(setStart)} placeholder="Điểm đi…" />
-        <AsyncSelect cacheOptions loadOptions={debouncedLoadOptions} onChange={handlePick(setEnd)}   placeholder="Điểm đến…" />
+        <AsyncSelect cacheOptions loadOptions={debouncedLoadOptions} onChange={handlePick(setEnd)} placeholder="Điểm đến…" />
       </div>
 
       <button
@@ -98,7 +84,6 @@ export default function RouteOptimizeQuickTest() {
         Tìm lộ trình
       </button>
 
-      {/* Map + Thông tin */}
       {best && (
         <div style={{ marginTop: 24 }}>
           <MapSection itinerary={best} />
@@ -109,76 +94,54 @@ export default function RouteOptimizeQuickTest() {
   );
 }
 
-/*──────────────────── Map section ───────────────────*/
 function MapSection({ itinerary }) {
   const containerRef = useRef(null);
-  const mapRef       = useRef(null);
+  const mapRef = useRef(null);
 
-  // Helper: build Goong Directions URL with optional waypoints
   const buildDirectionURL = (points) => {
-    const origin      = `${points[0][1]},${points[0][0]}`; // lat,lng
+    const origin = `${points[0][1]},${points[0][0]}`;
     const destination = `${points[points.length - 1][1]},${points[points.length - 1][0]}`;
-
     const mid = points.slice(1, -1);
-    // Giới hạn 23 waypoint => 25 điểm tổng
     let selected = mid;
     if (mid.length > MAX_WAYPOINTS - 2) {
       const step = Math.ceil(mid.length / (MAX_WAYPOINTS - 2));
       selected = mid.filter((_, idx) => idx % step === 0);
     }
     const waypointStr = selected.map(([lng, lat]) => `${lat},${lng}`).join('|');
-
-    // const params = new URLSearchParams({
-    //   api_key: GOONG_MAP_KEY,
-    //   origin,
-    //   destination,
-    //   vehicle: 'car',
-    // });
-    if (waypointStr) params.append('waypoints', waypointStr);
-
-    return `https://rsapi.goong.io/direction?origin=${origin}&destination=${destination}&vehicle=car&api_key=Q4bkZ3oKTpdRmZBsFwpezaOcYmXyuYuZA4WIeRLW`;
+    return `https://rsapi.goong.io/direction?origin=${origin}&destination=${destination}&vehicle=car&api_key=${GOONG_PLACES_KEY}${waypointStr ? `&waypoints=${waypointStr}` : ''}`;
   };
 
   useEffect(() => {
     if (!containerRef.current) return;
 
     const fetchLegPolyline = async (leg) => {
-      // 1. Chuẩn hoá toạ độ từ BE => [lng,lat]
       let pts = [];
       if (typeof leg.polyline === 'string') {
         pts = polyline.decode(leg.polyline).map(([lat, lng]) => [lng, lat]);
       } else if (Array.isArray(leg.polyline)) {
         pts = leg.polyline.map(([lat, lng]) => [lng, lat]);
       }
-      if (pts.length < 2) return pts; // không đủ => bỏ
-
-      // 2. Gọi Goong lấy đường ô‑tô cho toàn bộ pts thông qua waypoints
+      if (pts.length < 2) return pts;
       try {
         const url = buildDirectionURL(pts);
         const { data } = await axios.get(url);
-        const polyline  = polylineMapbox.decode(data.routes[0].overview_polyline.points);
-
-
-
-        return polyline.map(([lat, lng]) => [lng, lat]);
+        const polylineDecoded = polylineMapbox.decode(data.routes[0].overview_polyline.points);
+        return polylineDecoded.map(([lat, lng]) => [lng, lat]);
       } catch (e) {
-        console.warn('Direction fallback', e);
-        return pts; // fallback đường thẳng
+        return pts;
       }
     };
 
     const render = async () => {
-      // Fetch & merge tất cả leg
       const routeCoords = [];
       for (const leg of itinerary.legs) {
         const seg = await fetchLegPolyline(leg);
         if (!seg.length) continue;
-        if (routeCoords.length) seg.shift(); // tránh lặp điểm giao
+        if (routeCoords.length) seg.shift();
         routeCoords.push(...seg);
       }
       if (!routeCoords.length) return;
 
-      /*──── Vẽ map ────*/
       goongjs.accessToken = GOONG_MAP_KEY;
       if (mapRef.current) mapRef.current.remove();
 
@@ -215,6 +178,22 @@ function MapSection({ itinerary }) {
           .setPopup(new goongjs.Popup().setText('Điểm đến'))
           .addTo(map);
 
+        // Thêm các trạm dừng từ từng leg (nếu có toạ độ)
+        for (const leg of itinerary.legs) {
+          if (leg.startStopLat && leg.startStopLng) {
+            new goongjs.Marker({ color: '#f59e0b' })
+              .setLngLat([leg.startStopLng, leg.startStopLat])
+              .setPopup(new goongjs.Popup().setText(`Bắt đầu: ${leg.startStop}`))
+              .addTo(map);
+          }
+          if (leg.endStopLat && leg.endStopLng) {
+            new goongjs.Marker({ color: '#3b82f6' })
+              .setLngLat([leg.endStopLng, leg.endStopLat])
+              .setPopup(new goongjs.Popup().setText(`Kết thúc: ${leg.endStop}`))
+              .addTo(map);
+          }
+        }
+
         const bounds = routeCoords.reduce(
           (b, c) => b.extend(c),
           new goongjs.LngLatBounds(routeCoords[0], routeCoords[0])
@@ -227,10 +206,9 @@ function MapSection({ itinerary }) {
     return () => { if (mapRef.current) mapRef.current.remove(); };
   }, [itinerary]);
 
-  return <div ref={containerRef} style={{ height: 350, borderRadius: 8 }} />;
+  return <div ref={containerRef} style={{ height: 400, borderRadius: 8 }} />;
 }
 
-/*──────────────────── Table section ───────────────────*/
 function LegTable({ itinerary }) {
   return (
     <table style={{ width: '100%', marginTop: 16, fontSize: 14, borderCollapse: 'collapse' }}>
