@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+  <!-- Define Persistence Unit -->
+  <persistence-unit name="my_persistence_unit">
+    <class>com.hdda.pojo.Notifications</class>
+    <class>com.hdda.pojo.Users</class>
+    <class>com.hdda.pojo.TrafficReports</class>
+    <class>com.hdda.pojo.Favorites</class>
+    <class>com.hdda.pojo.RouteStops</class>
+    <class>com.hdda.pojo.Schedules</class>
+    <class>com.hdda.pojo.SearchLogs</class>
+    <class>com.hdda.pojo.Vehicles</class>
+    <class>com.hdda.pojo.Routes</class>
+    <class>com.hdda.pojo.VehiclePositions</class>
+    <class>com.hdda.pojo.Stops</class>
+    <class>com.hdda.pojo.Roles</class>
+    <class>com.hdda.pojo.SearchLog</class>
+    <class>com.hdda.pojo.TrafficReport</class>
+    <class>com.hdda.pojo.Vehicle</class>
+    <class>com.hdda.pojo.Notification</class>
+    <class>com.hdda.pojo.Favorite</class>
+    <class>com.hdda.pojo.VehiclePosition</class>
+    <class>com.hdda.pojo.Role</class>
+    <class>com.hdda.pojo.Route</class>
+    <class>com.hdda.pojo.User</class>
+    <class>com.hdda.pojo.Schedule</class>
+    <class>com.hdda.pojo.Stop</class>
+    <class>com.hdda.pojo.RouteStop</class>
+    <class>com.hdda.pojo.ScheduleTrip</class>
+    <class>com.hdda.pojo.RouteVariant</class>
+    <class>com.hdda.pojo.VariantStop</class>
+  </persistence-unit>
+</persistence>

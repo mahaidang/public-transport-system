@@ -1,0 +1,67 @@
+<!-- templates/schedules/form.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title th:text="${schedule.id == null} ? 'Thêm Lịch' : 'Cập nhật Lịch'"></title>
+    <th:block th:replace="base :: bootstrap"></th:block>
+</head>
+<body>
+    <header th:replace="base :: header"></header>
+
+    <main class="container mt-4" style="max-width:600px">
+        <h4 class="mb-3"
+            th:text="${schedule.id == null} ? 'Thêm Lịch Mới' : 'Chỉnh Sửa Lịch'"></h4>
+
+        <form th:object="${schedule}"
+              th:action="@{'/schedules/save'}"
+              method="post"
+              class="border p-3 rounded shadow-sm bg-light">
+
+            <!-- Hidden: mode -->
+            <input type="hidden" name="mode" th:value="${formMode}" />
+            <input type="hidden" th:field="*{id}" />
+            <input type="hidden" th:field="*{variantId}" />
+
+            <!-- Day group -->
+            <div class="mb-3">
+                <label class="form-label">Nhóm ngày</label>
+                <input type="text" class="form-control"
+                       th:field="*{dayGroup}" placeholder="VD: Mon-Fri" />
+                <div class="text-danger" th:if="${#fields.hasErrors('dayGroup')}" th:errors="*{dayGroup}"></div>
+            </div>
+
+            <!-- Effective from -->
+            <div class="mb-3">
+                <label class="form-label">Hiệu lực từ</label>
+                <input type="date" class="form-control" th:field="*{effectiveFrom}" />
+                <div class="text-danger" th:if="${#fields.hasErrors('effectiveFrom')}" th:errors="*{effectiveFrom}"></div>
+            </div>
+
+            <!-- Effective to -->
+            <div class="mb-3">
+                <label class="form-label">Hiệu lực đến</label>
+                <input type="date" class="form-control" th:field="*{effectiveTo}" />
+                <div class="text-danger" th:if="${#fields.hasErrors('effectiveTo')}" th:errors="*{effectiveTo}"></div>
+            </div>
+
+            <!-- Note -->
+            <div class="mb-3">
+                <label class="form-label">Ghi chú</label>
+                <textarea class="form-control" th:field="*{note}" rows="2"></textarea>
+                <div class="text-danger" th:if="${#fields.hasErrors('note')}" th:errors="*{note}"></div>
+            </div>
+
+            <!-- Buttons -->
+            <button class="btn btn-primary" type="submit"
+                    th:text="${schedule.id == null} ? 'Lưu' : 'Cập nhật'">Lưu</button>
+            <a th:href="@{'/variants/' + ${variantId} + '/schedules'}"
+               class="btn btn-secondary ms-2">Hủy</a>
+        </form>
+
+    </main>
+
+    <footer th:replace="base :: footer"></footer>
+<th:block th:replace="base :: script"></th:block>
+
+</body>
+</html>
