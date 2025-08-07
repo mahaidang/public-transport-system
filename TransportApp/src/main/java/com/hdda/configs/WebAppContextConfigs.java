@@ -34,7 +34,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ComponentScan(basePackages = {
     "com.hdda.controllers",
     "com.hdda.repositories",
-    "com.hdda.services"
+    "com.hdda.services",
 })
 public class WebAppContextConfigs implements WebMvcConfigurer {
 

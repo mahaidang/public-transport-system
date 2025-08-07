@@ -5,7 +5,9 @@ com\hdda\pojo\ScheduleTrip.class
 com\hdda\pojo\Stop.class
 com\hdda\services\impl\UserServiceImpl.class
 com\hdda\controllers\api\ApiRouteController.class
+com\hdda\dto\request\TrafficReportRequestDTO.class
 com\hdda\repositories\impl\RouteRepositoryImpl.class
+com\hdda\repositories\impl\TrafficReportRepositoryImpl.class
 com\hdda\repositories\impl\RouteVariantRepositoryImpl.class
 com\hdda\services\external\GoongService.class
 com\hdda\configs\SpringSecurityConfigs.class
@@ -25,6 +27,7 @@ com\hdda\repositories\impl\UserRepositoryImpl.class
 com\hdda\services\impl\FavoriteServiceImpl.class
 com\hdda\services\ScheduleTripService.class
 com\hdda\filters\JwtFilter.class
+com\hdda\pojo\TrafficReport.class
 com\hdda\pojo\VehiclePosition.class
 com\hdda\dto\detail\RouteVariantDetailDTO.class
 com\hdda\repositories\impl\RoleRepositoryImpl.class
@@ -58,8 +61,10 @@ com\hdda\services\UserService.class
 com\hdda\dto\detail\ScheduleDetailDTO.class
 com\hdda\services\ScheduleService.class
 com\hdda\dto\request\ScheduleRequestDTO.class
+com\hdda\services\impl\TrafficReportServiceImpl.class
 com\hdda\controllers\api\ApiRouteVariantController.class
 com\hdda\controllers\UserController.class
+com\hdda\services\TrafficReportService.class
 com\hdda\controllers\api\ApiRouteOptimizeController.class
 com\hdda\enums\TravelMode.class
 com\hdda\services\StopService.class
@@ -67,7 +72,11 @@ com\hdda\repositories\RouteRepository.class
 com\hdda\configs\SecurityWebApplicationInitializer.class
 com\hdda\transportapp\JakartaRestConfiguration.class
 com\hdda\controllers\RouteController.class
+com\hdda\repositories\TrafficReportRepository.class
+com\hdda\configs\FirebaseConfig.class
 com\hdda\controllers\api\ApiFavoriteController.class
+com\hdda\controllers\api\ApiTrafficReportController.class
+com\hdda\controllers\TrafficReportController.class
 com\hdda\repositories\FavoriteRepository.class
 com\hdda\dto\base\RouteVariantBaseDTO.class
 com\hdda\controllers\ScheduleController.class
