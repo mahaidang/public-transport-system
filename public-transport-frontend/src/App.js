@@ -1,10 +1,9 @@
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useEffect } from "react";
 import Register from "./components/Register";
 import TrafficReport from "./components/TrafficReport";
 import MapView from "./components/MapView";
@@ -15,20 +14,11 @@ import RouteVariantDetail from "./components/RouteVariantDetail";
 import FavoriteRoutes from './components/FavoriteRoutes';
 
 
+
 const LayoutWrapper = () => {
-  const location = useLocation();
-
-
-  const isLoginPage = location.pathname === "/";
-  const isRegisterPage = location.pathname === "/";
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
-
   return (
     <>
-      {!isLoginPage && <Header /> || !isRegisterPage && <Header />}
+    <Header/>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -40,9 +30,8 @@ const LayoutWrapper = () => {
         <Route path="/routes/:id" element={<RouteDetail />} />
         <Route path="/variants/:id" element={<RouteVariantDetail />} />
         <Route path="/favorite" element={<FavoriteRoutes />} />
-
       </Routes>
-      {!isLoginPage && <Footer /> || !isRegisterPage && <Footer />}
+      <Footer/>
     </>
   );
 };

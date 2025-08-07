@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
-import { Button, Form, Row, Col, Alert, Image, Spinner } from 'react-bootstrap';
-import { FaMapMarkerAlt, FaUpload, FaCheck, FaSpinner } from 'react-icons/fa';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Button, Form, Alert, Image, Spinner } from 'react-bootstrap';
+import { FaUpload, FaSpinner } from 'react-icons/fa';
 import axios from 'axios';
-import ENV from '../configs/env'; // ✅ import ENV
+import AsyncSelect from 'react-select/async';
+import debounce from 'lodash.debounce';
+import ENV from '../configs/env';
+import { authApis } from '../configs/Apis';
+import { endpoints } from '../configs/Apis';
+
+const GOONG_API_KEY = ENV.GOONG_PLACES_KEY;
 
 const TrafficReport = () => {
   const [description, setDescription] = useState('');
@@ -13,65 +19,50 @@ const TrafficReport = () => {
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const getCoordsFromAddress = async () => {
+  // 🔎 Fetch gợi ý địa chỉ từ Goong
+  const fetchSuggestions = async (inputValue) => {
+    if (!inputValue) return [];
+    const res = await axios.get('https://rsapi.goong.io/Place/AutoComplete', {
+      params: { input: inputValue, api_key: GOONG_API_KEY }
+    });
+    return res.data.predictions.map((p) => ({
+      label: p.description,
+      value: p.place_id
+    }));
+  };
+
+  const debouncedFetch = useMemo(() => debounce(fetchSuggestions, 800), []);
+  useEffect(() => () => debouncedFetch.cancel(), [debouncedFetch]);
+
+  // 📍 Lấy toạ độ từ place_id
+  const handlePlaceSelect = async (selected) => {
+    if (!selected) return;
+
     try {
-      const res = await axios.get('https://rsapi.goong.io/Geocode', {
-        params: {
-          address: address,
-          api_key: ENV.GOONG_API_KEY
-        }
+      const res = await axios.get('https://rsapi.goong.io/Place/Detail', {
+        params: { place_id: selected.value, api_key: GOONG_API_KEY }
       });
 
-      if (res.data.status !== 'OK' || res.data.results.length === 0)
-        throw new Error('Không tìm thấy địa chỉ.');
-
-      const { lat, lng } = res.data.results[0].geometry.location;
+      const { lat, lng } = res.data.result.geometry.location;
       setCoords({ lat, lng });
-      setStatus('✅ Đã lấy tọa độ thành công từ Goong');
+      setAddress(selected.label);
+      setStatus('📍 Đã chọn địa chỉ và lấy toạ độ thành công');
     } catch (err) {
-      setStatus('❌ Lỗi lấy tọa độ (Goong): ' + err.message);
+      console.error(err);
+      setStatus('❌ Lỗi khi lấy toạ độ từ Goong');
     }
   };
 
-  const getCurrentLocation = () => {
-    if (!navigator.geolocation) return setStatus('⚠️ Trình duyệt không hỗ trợ định vị.');
-
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const { latitude, longitude } = pos.coords;
-        setCoords({ lat: latitude, lng: longitude });
-
-        try {
-          const res = await axios.get('https://rsapi.goong.io/Geocode', {
-            params: {
-              latlng: `${latitude},${longitude}`,
-              api_key: ENV.GOONG_API_KEY
-            }
-          });
-
-          if (res.data.status === 'OK' && res.data.results.length > 0) {
-            setAddress(res.data.results[0].formatted_address);
-            setStatus('📍 Đã định vị vị trí hiện tại và cập nhật địa chỉ');
-          } else {
-            setStatus('⚠️ Không thể tìm thấy địa chỉ từ vị trí hiện tại.');
-          }
-        } catch (err) {
-          console.error(err);
-          setStatus('❌ Lỗi khi truy xuất địa chỉ từ Goong');
-        }
-      },
-      () => setStatus('❌ Không thể lấy vị trí hiện tại.')
-    );
-  };
-
+  // ☁️ Upload ảnh lên Cloudinary
   const handleUploadImage = async () => {
     const form = new FormData();
     form.append('file', imageFile);
-    form.append('upload_preset', ENV.CLOUDINARY_UPLOAD_PRESET); // ✅
-    const res = await axios.post(ENV.CLOUDINARY_API, form);       // ✅
+    form.append('upload_preset', ENV.CLOUDINARY_UPLOAD_PRESET);
+    const res = await axios.post(ENV.CLOUDINARY_API, form);
     return res.data.secure_url;
   };
 
+  // 📤 Gửi báo cáo
   const handleSubmit = async () => {
     if (!description || !imageFile || !coords) {
       return setStatus('⚠️ Vui lòng nhập đầy đủ mô tả, vị trí và hình ảnh.');
@@ -83,7 +74,7 @@ const TrafficReport = () => {
 
       const imageUrl = await handleUploadImage();
 
-      await axios.post('http://localhost:8080/TransportApp/api/reports', {
+      await authApis().post(endpoints.reports, {
         description,
         latitude: coords.lat,
         longitude: coords.lng,
@@ -120,25 +111,16 @@ const TrafficReport = () => {
           />
         </Form.Group>
 
-        <Row className="mb-3 g-2">
-          <Col md={8}>
-            <Form.Control
-              placeholder="Nhập địa chỉ hoặc tên đường"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-            />
-          </Col>
-          <Col>
-            <Button variant="primary" onClick={getCoordsFromAddress}>
-              <FaMapMarkerAlt className="me-1" /> Tìm
-            </Button>
-          </Col>
-          <Col>
-            <Button variant="outline-secondary" onClick={getCurrentLocation}>
-              📍 Hiện tại
-            </Button>
-          </Col>
-        </Row>
+        <Form.Group className="mb-3">
+          <Form.Label>Chọn địa điểm</Form.Label>
+          <AsyncSelect
+            cacheOptions
+            loadOptions={debouncedFetch}
+            onChange={handlePlaceSelect}
+            placeholder="Nhập địa chỉ để tìm gợi ý..."
+            defaultOptions
+          />
+        </Form.Group>
 
         <Form.Group className="mb-3">
           <Form.Label>Hình ảnh minh hoạ</Form.Label>
@@ -158,7 +140,15 @@ const TrafficReport = () => {
 
         <div className="d-grid mb-2">
           <Button variant="success" onClick={handleSubmit} disabled={loading}>
-            {loading ? <><FaSpinner className="spin me-2" /> Đang gửi...</> : <><FaUpload className="me-2" /> Gửi báo cáo</>}
+            {loading ? (
+              <>
+                <FaSpinner className="spin me-2" /> Đang gửi...
+              </>
+            ) : (
+              <>
+                <FaUpload className="me-2" /> Gửi báo cáo
+              </>
+            )}
           </Button>
         </div>
 

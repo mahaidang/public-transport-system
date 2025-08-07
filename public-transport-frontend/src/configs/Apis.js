@@ -10,6 +10,7 @@ export const endpoints = {
   routes: "/routes",
   variants: "/variants",
   favorites: "/secure/favorites",
+  reports: "/secure/reports",
 };
 
 export const authApis = () => axios.create({

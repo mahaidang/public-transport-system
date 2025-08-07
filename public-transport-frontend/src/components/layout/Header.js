@@ -30,29 +30,29 @@ const Header = () => {
     }
   };
   useEffect(() => {
-  const loadUser = () => {
-    const userInfo = localStorage.getItem("user");
-    if (userInfo) setUser(JSON.parse(userInfo));
-    else setUser(null);
-  };
+    const loadUser = () => {
+      const userInfo = localStorage.getItem("user");
+      if (userInfo) setUser(JSON.parse(userInfo));
+      else setUser(null);
+    };
 
-  loadUser(); // Lần đầu load
+    loadUser(); // Lần đầu load
 
-  // 👇 Lắng nghe sự kiện thay đổi từ localStorage (từ Login.js)
-  window.addEventListener("storage", loadUser);
+    // 👇 Lắng nghe sự kiện thay đổi từ localStorage (từ Login.js)
+    window.addEventListener("storage", loadUser);
 
-  return () => window.removeEventListener("storage", loadUser);
-}, []);
+    return () => window.removeEventListener("storage", loadUser);
+  }, []);
 
 
   return (
-    <Navbar expand="lg" className="bg-body-tertiary px-3">
+    <Navbar expand="lg" className="bg-body-tertiary shadow-sm border-bottom py-2" >
       <Container>
         <Navbar.Brand as={Link} to="/">Thông tin giao thông</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Link to="/home" className="nav-link">Trang chủ</Link>
+            <Link to="/" className="nav-link">Trang chủ</Link>
             <Link to="/report" className="nav-link">Báo cáo</Link>
             <Link to="/profile" className="nav-link">Hồ sơ cá nhân</Link>
 
@@ -60,7 +60,7 @@ const Header = () => {
               <Link to="/map" className="dropdown-item">Tra cứu lộ trình bus</Link>
               <Link to="/search" className="dropdown-item">Tra cứu tuyến</Link>
               <Link to="/favorite" className="dropdown-item">Tuyến đường yêu thích</Link>
-            </NavDropdown>
+            </NavDropdown>            
           </Nav>
 
           <Nav className="ms-auto align-items-center gap-2">
@@ -83,6 +83,7 @@ const Header = () => {
                   height="32"
                   alt="avatar"
                   className="me-2"
+                  style={{ objectFit: 'cover' }}
                 />
                 <span className="me-2">Xin chào {user.username}</span>
                 <Button variant="outline-danger" size="sm" onClick={handleLogout}>
@@ -91,6 +92,7 @@ const Header = () => {
               </>
             )}
           </Nav>
+
         </Navbar.Collapse>
       </Container>
     </Navbar>
