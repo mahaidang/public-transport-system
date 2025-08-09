@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <title>Trang chủ</title>
+    <!-- Gọi fragment bootstrap từ base.html -->
+    <th:block th:replace="base :: bootstrap"></th:block>
+</head>
+<body>
+<!-- Header dùng chung -->
+<header th:replace="base :: header"></header>
+
+<main class="container mt-4">
+    <h3 class="mb-3">Danh sách Tuyến</h3>
+
+    <a class="btn btn-primary mb-2" th:href="@{/routes/add}">+ Thêm Tuyến</a>
+
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Mã</th>
+            <th>Tên tuyến</th>
+            <th>Trạng thái</th>
+            <th style="width:140px"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="r,stat : ${routes}">
+            <td th:text="${stat.count}"></td>
+            <td th:text="${r.code}"></td>
+            <td th:text="${r.name}"></td>
+            <td>
+                <span th:text="${r.isActive} ? 'Đang chạy' : 'Tạm dừng'"></span>
+            </td>
+            <td>
+                <a class="btn btn-sm btn-warning" th:href="@{|/routes/edit/${r.id}|}">Sửa</a>
+                <a class="btn btn-sm btn-danger" th:href="@{|/routes/delete/${r.id}|}"
+                   onclick="return confirm('Xóa tuyến này?');">Xóa</a>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(routes)}">
+            <td colspan="5" class="text-center">Chưa có tuyến nào</td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<!-- Footer dùng chung -->
+<footer th:replace="base :: footer"></footer>
+</body>
+</html>

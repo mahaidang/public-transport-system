@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Quản lý Báo cáo Giao thông</title>
+    <th:block th:replace="base :: bootstrap"></th:block>
+</head>
+<body>
+    <header th:replace="base :: header"></header>
+
+    <main class="container mt-4">
+        <h3 class="mb-4">Danh sách Báo cáo Giao thông</h3>
+
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Người gửi</th>
+                    <th>Mô tả</th>
+                    <th>Thời gian</th>
+                    <th>Trạng thái</th>
+                    <th>Hình ảnh</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r, stat : ${reports}">
+                    <td th:text="${stat.index + 1}"></td>
+                    <td th:text="${r.userId.username}"></td>
+                    <td th:text="${r.description}"></td>
+                    <td th:text="${#dates.format(r.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td>
+                        <span th:text="${r.status}"
+                              th:class="${r.status == 'PENDING'} ? 'text-warning' :
+                              (${r.status == 'APPROVED'} ? 'text-success' : 'text-danger')">
+                        </span>
+                    </td>
+
+                    <td>
+                        <img th:if="${r.imageUrl}" th:src="${r.imageUrl}" width="100" class="img-thumbnail"/>
+                    </td>
+                    <td class="d-flex gap-1">
+                        <a th:href="@{|/reports/update-status?id=${r.id}&action=approve|}" 
+                           class="btn btn-success btn-sm"
+                           th:if="${r.status == 'PENDING'}">Phê duyệt</a>
+
+                        <a th:href="@{|/reports/update-status?id=${r.id}&action=reject|}" 
+                           class="btn btn-danger btn-sm"
+                           th:if="${r.status == 'PENDING'}">Từ chối</a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(reports)}">
+                    <td colspan="7" class="text-center">Không có báo cáo nào</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+    <footer th:replace="base :: footer"></footer>
+</body>
+</html>
