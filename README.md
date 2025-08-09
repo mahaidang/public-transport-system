@@ -17,8 +17,7 @@
 - **Lưu lịch trình yêu thích**: Lưu & quản lý các tuyến đường yêu thích.
 - **Thông báo tùy chỉnh**: Thông báo thay đổi lịch trình/tuyến đường.
 
-### 4. Cung cấp Thông tin Thời gian thực (*)
-- **Thông báo thời gian thực**: Vị trí xe, tình trạng kẹt xe, sự cố.
+### 4. Cung cấp Thông tin (*)
 - **Báo cáo kẹt xe**: Cho phép người dùng gửi báo cáo kèm **hình ảnh**.
 
 ---
